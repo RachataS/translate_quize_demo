@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:translate_quize/savetext.dart';
 import 'package:translator/translator.dart';
 
 class translate_screen extends StatefulWidget {
@@ -17,7 +16,6 @@ class _translate_screenState extends State<translate_screen> {
   GoogleTranslator translator = GoogleTranslator();
   String translated = "คำแปล";
   var raw;
-  Save_Eng save = Save_Eng();
   final rawtxt = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -28,7 +26,7 @@ class _translate_screenState extends State<translate_screen> {
       ),
       body: Card(
         key: formKey,
-        margin: const EdgeInsets.all(12),
+        margin: const EdgeInsets.fromLTRB(12, 12, 12, 200),
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
@@ -44,9 +42,6 @@ class _translate_screenState extends State<translate_screen> {
               decoration: const InputDecoration(
                 hintText: "Enter Text",
               ),
-              onSaved: (var text) {
-                //save.engtxt = text;
-              },
               controller: rawtxt,
             ),
             const Divider(
@@ -64,17 +59,20 @@ class _translate_screenState extends State<translate_screen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          formKey.currentState?.save();
-          print(save.engtxt);
-          print(rawtxt.text);
-          translator
-              .translate(rawtxt.text, from: 'en', to: 'th')
-              .then((transaltion) {
-            setState(() {
-              translated = transaltion.toString();
+          try {
+            formKey.currentState?.save();
+            print(rawtxt.text);
+            translator
+                .translate(rawtxt.text, from: 'en', to: 'th')
+                .then((transaltion) {
+              setState(() {
+                translated = transaltion.toString();
+              });
             });
-          });
-          print("translated = $translated");
+            print("translated = $translated");
+          } catch (e) {
+            print(e);
+          }
         },
         child: Icon(Icons.g_translate),
       ),
