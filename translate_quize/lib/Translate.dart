@@ -43,6 +43,25 @@ class _translate_screenState extends State<translate_screen> {
                 hintText: "Enter Text",
               ),
               controller: rawtxt,
+              onChanged: (rawtxt) async {
+                if (rawtxt == "") {
+                  translated = "คำแปล";
+                } else {
+                  try {
+                    formKey.currentState?.save();
+                    await translator
+                        .translate(rawtxt, from: 'en', to: 'th')
+                        .then((transaltion) {
+                      setState(() {
+                        translated = transaltion.toString();
+                      });
+                    });
+                    print("translated = $translated");
+                  } catch (e) {
+                    print(e);
+                  }
+                }
+              },
             ),
             const Divider(
               height: 32,
@@ -62,7 +81,7 @@ class _translate_screenState extends State<translate_screen> {
           try {
             formKey.currentState?.save();
             print(rawtxt.text);
-            translator
+            await translator
                 .translate(rawtxt.text, from: 'en', to: 'th')
                 .then((transaltion) {
               setState(() {
