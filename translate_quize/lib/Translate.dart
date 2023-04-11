@@ -15,6 +15,7 @@ class _translate_screenState extends State<translate_screen> {
   final formKey = GlobalKey<FormState>();
   GoogleTranslator translator = GoogleTranslator();
   String translated = "คำแปล";
+  var save_enftxt, save_thtxt;
   var raw;
   final rawtxt = TextEditingController();
   @override
@@ -56,7 +57,6 @@ class _translate_screenState extends State<translate_screen> {
                         translated = transaltion.toString();
                       });
                     });
-                    print("translated = $translated");
                   } catch (e) {
                     print(e);
                   }
@@ -79,21 +79,17 @@ class _translate_screenState extends State<translate_screen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           try {
-            formKey.currentState?.save();
+            save_thtxt = translated;
+            save_enftxt = rawtxt;
             print(rawtxt.text);
-            await translator
-                .translate(rawtxt.text, from: 'en', to: 'th')
-                .then((transaltion) {
-              setState(() {
-                translated = transaltion.toString();
-              });
-            });
-            print("translated = $translated");
+            print(save_thtxt);
+            formKey.currentState?.reset();
+            translated = "คำแปล";
           } catch (e) {
             print(e);
           }
         },
-        child: Icon(Icons.g_translate),
+        child: Icon(Icons.save_alt_outlined),
       ),
     );
   }
