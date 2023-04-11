@@ -1,2 +1,2 @@
 # translate_quize_demo
-translate quize app demo version
+translate quize mobile application demo version
