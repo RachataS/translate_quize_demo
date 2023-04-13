@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:translate_quize/Thai_translate.dart';
+import 'package:translate_quize/Translate.dart';
 import 'package:translator/translator.dart';
 
-class translate_screen extends StatefulWidget {
-  const translate_screen({super.key});
+class thai_translate extends StatefulWidget {
+  const thai_translate({super.key});
 
   @override
-  State<translate_screen> createState() => _translate_screenState();
+  State<thai_translate> createState() => _thai_translateState();
 }
 
-class _translate_screenState extends State<translate_screen> {
+class _thai_translateState extends State<thai_translate> {
   final formKey = GlobalKey<FormState>();
   GoogleTranslator translator = GoogleTranslator();
-  String translated = "คำแปล";
+  String translated = "Translation";
   var save_enftxt, save_thtxt;
   var raw;
   final rawtxt = TextEditingController();
@@ -29,7 +28,7 @@ class _translate_screenState extends State<translate_screen> {
           icon: Icon(Icons.translate_sharp),
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return thai_translate();
+              return translate_screen();
             }));
           },
         ),
@@ -40,7 +39,7 @@ class _translate_screenState extends State<translate_screen> {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            const Text("English (US)"),
+            const Text("ไทย (TH)"),
             const SizedBox(
               height: 8,
             ),
@@ -50,17 +49,17 @@ class _translate_screenState extends State<translate_screen> {
                 fontWeight: FontWeight.bold,
               ),
               decoration: const InputDecoration(
-                hintText: "Enter Text",
+                hintText: "ป้อนข้อความ",
               ),
               controller: rawtxt,
               onChanged: (rawtxt) async {
                 if (rawtxt == "") {
-                  translated = "คำแปล";
+                  translated = "Translation";
                 } else {
                   try {
                     formKey.currentState?.save();
                     await translator
-                        .translate(rawtxt, from: 'en', to: 'th')
+                        .translate(rawtxt, from: 'th', to: 'en')
                         .then((transaltion) {
                       setState(() {
                         translated = transaltion.toString();
