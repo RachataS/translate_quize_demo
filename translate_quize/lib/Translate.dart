@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:translate_quize/Thai_translate.dart';
 import 'package:translator/translator.dart';
 
@@ -28,9 +29,10 @@ class _translate_screenState extends State<translate_screen> {
         leading: IconButton(
           icon: Icon(Icons.translate_sharp),
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return thai_translate();
-            }));
+            Navigator.push(
+                context,
+                PageTransition(
+                    child: thai_translate(), type: PageTransitionType.fade));
           },
         ),
       ),

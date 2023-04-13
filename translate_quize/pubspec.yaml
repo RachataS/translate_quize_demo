@@ -32,6 +32,7 @@ dependencies:
   flutter:
     sdk: flutter
   translator: ^0.1.7
+  page_transition: ^2.0.9
 
 
   # The following adds the Cupertino Icons font to your application.
