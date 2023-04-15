@@ -20,6 +20,7 @@ class _translate_screenState extends State<translate_screen> {
   var save_enftxt, save_thtxt;
   var raw;
   final rawtxt = TextEditingController();
+  List<String> similar_word = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,6 +67,8 @@ class _translate_screenState extends State<translate_screen> {
                         .then((transaltion) {
                       setState(() {
                         translated = transaltion.toString();
+                        similar_word.add(translated);
+                        print(similar_word);
                       });
                     });
                   } catch (e) {
