@@ -17,7 +17,7 @@ class _translate_screenState extends State<translate_screen> {
   final formKey = GlobalKey<FormState>();
   GoogleTranslator translator = GoogleTranslator();
   String translated = "คำแปล";
-  var save_enftxt, save_thtxt;
+  var save_engtxt, save_thtxt;
   var raw;
   final rawtxt = TextEditingController();
   List<String> similar_word = [];
@@ -67,8 +67,7 @@ class _translate_screenState extends State<translate_screen> {
                         .then((transaltion) {
                       setState(() {
                         translated = transaltion.toString();
-                        similar_word.add(translated);
-                        print(similar_word);
+                        //similar_word.add(transaltion.toString());
                       });
                     });
                   } catch (e) {
@@ -94,11 +93,9 @@ class _translate_screenState extends State<translate_screen> {
         onPressed: () async {
           try {
             save_thtxt = translated;
-            save_enftxt = rawtxt;
-            print(rawtxt.text);
+            save_engtxt = rawtxt.text;
+            print(save_engtxt);
             print(save_thtxt);
-            formKey.currentState?.reset();
-            translated = "คำแปล";
           } catch (e) {
             print(e);
           }

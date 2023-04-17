@@ -16,7 +16,7 @@ class _thai_translateState extends State<thai_translate> {
   final formKey = GlobalKey<FormState>();
   GoogleTranslator translator = GoogleTranslator();
   String translated = "Translation";
-  var save_enftxt, save_thtxt;
+  var save_engtxt, save_thtxt;
   var raw;
   final rawtxt = TextEditingController();
   @override
@@ -89,12 +89,10 @@ class _thai_translateState extends State<thai_translate> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           try {
-            save_thtxt = translated;
-            save_enftxt = rawtxt;
-            print(rawtxt.text);
+            save_engtxt = translated;
+            save_thtxt = rawtxt.text;
             print(save_thtxt);
-            formKey.currentState?.reset();
-            translated = "คำแปล";
+            print(save_engtxt);
           } catch (e) {
             print(e);
           }
