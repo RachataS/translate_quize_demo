@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:http/http.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:translate_quize/Thai_translate.dart';
 import 'package:translator/translator.dart';
+
+import 'Thai_translate.dart';
 
 class translate_screen extends StatefulWidget {
   const translate_screen({super.key});
@@ -16,11 +18,12 @@ class translate_screen extends StatefulWidget {
 class _translate_screenState extends State<translate_screen> {
   final formKey = GlobalKey<FormState>();
   GoogleTranslator translator = GoogleTranslator();
+  String label = "English (US)";
   String translated = "คำแปล";
-  var save_engtxt, save_thtxt;
-  var raw;
+  var save_engtxt, save_thtxt, raw;
+  String inlang = "en";
+  String outlang = "th";
   final rawtxt = TextEditingController();
-  List<String> similar_word = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,6 +33,19 @@ class _translate_screenState extends State<translate_screen> {
         leading: IconButton(
           icon: Icon(Icons.translate_sharp),
           onPressed: () {
+            /*if (inlang == "en") {
+              inlang = "th";
+              outlang = "en";
+              label = "English (US)";
+              print(label);
+            } else {
+              if (inlang == "th") {
+                inlang = "en";
+                outlang = "th";
+                label = "ไทย (TH)";
+                print(label);
+              }
+            }*/
             Navigator.push(
                 context,
                 PageTransition(
@@ -39,11 +55,11 @@ class _translate_screenState extends State<translate_screen> {
       ),
       body: Card(
         key: formKey,
-        margin: const EdgeInsets.fromLTRB(12, 12, 12, 200),
+        margin: const EdgeInsets.fromLTRB(12, 12, 12, 500),
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            const Text("English (US)"),
+            Text(label),
             const SizedBox(
               height: 8,
             ),
@@ -63,11 +79,10 @@ class _translate_screenState extends State<translate_screen> {
                   try {
                     formKey.currentState?.save();
                     await translator
-                        .translate(rawtxt, from: 'en', to: 'th')
+                        .translate(rawtxt, from: inlang, to: outlang)
                         .then((transaltion) {
                       setState(() {
                         translated = transaltion.toString();
-                        //similar_word.add(transaltion.toString());
                       });
                     });
                   } catch (e) {
