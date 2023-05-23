@@ -55,7 +55,7 @@ class _translate_screenState extends State<translate_screen> {
       ),
       body: Card(
         key: formKey,
-        margin: const EdgeInsets.fromLTRB(12, 12, 12, 500),
+        margin: const EdgeInsets.fromLTRB(12, 12, 12, 200),
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
