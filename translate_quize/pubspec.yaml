@@ -34,6 +34,7 @@ dependencies:
   translator: ^0.1.7
   page_transition: ^2.0.9
   http: ^0.13.5
+  auto_size_text: 3.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
