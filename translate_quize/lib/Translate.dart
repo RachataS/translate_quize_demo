@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:page_transition/page_transition.dart';
 import 'package:translator/translator.dart';
+import 'dart:convert';
 
 import 'Thai_translate.dart';
 
@@ -24,6 +25,48 @@ class _translate_screenState extends State<translate_screen> {
   String inlang = "en";
   String outlang = "th";
   final rawtxt = TextEditingController();
+  var synonyms = [];
+
+  // Future<void> getSynonyms(String word) async {
+  //   try {
+  //     final response = await http.get(
+  //       Uri.parse('https://api.datamuse.com/words?rel_syn=$word&max=10'),
+  //     );
+  //     if (response.statusCode == 200) {
+  //       final List<dynamic> jsonData = jsonDecode(response.body);
+  //       final List wordSynonyms = jsonData.map((item) => item['word']).toList();
+  //       setState(() {
+  //         synonyms = wordSynonyms;
+  //       });
+  //       print(synonyms);
+  //     } else {
+  //       print('Request failed with status: ${response.statusCode}.');
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
+
+  Future<void> getSynonyms(String word) async {
+    try {
+      final response = await http.get(
+        Uri.parse('https://dict.longdo.com/mobile.php?search=$word'),
+      );
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = jsonDecode(response.body);
+        final List wordSynonyms = jsonData.map((item) => item['word']).toList();
+        setState(() {
+          synonyms = wordSynonyms;
+        });
+        print(synonyms);
+      } else {
+        print('Request failed with status: ${response.statusCode}.');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,6 +126,7 @@ class _translate_screenState extends State<translate_screen> {
                         .then((transaltion) {
                       setState(() {
                         translated = transaltion.toString();
+                        getSynonyms(rawtxt);
                       });
                     });
                   } catch (e) {
@@ -95,7 +139,7 @@ class _translate_screenState extends State<translate_screen> {
               height: 32,
             ),
             Text(
-              translated,
+              '$translated\n$synonyms',
               style: const TextStyle(
                   fontSize: 28,
                   color: Colors.blueGrey,
