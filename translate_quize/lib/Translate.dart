@@ -27,30 +27,10 @@ class _translate_screenState extends State<translate_screen> {
   final rawtxt = TextEditingController();
   var synonyms = [];
 
-  // Future<void> getSynonyms(String word) async {
-  //   try {
-  //     final response = await http.get(
-  //       Uri.parse('https://api.datamuse.com/words?rel_syn=$word&max=10'),
-  //     );
-  //     if (response.statusCode == 200) {
-  //       final List<dynamic> jsonData = jsonDecode(response.body);
-  //       final List wordSynonyms = jsonData.map((item) => item['word']).toList();
-  //       setState(() {
-  //         synonyms = wordSynonyms;
-  //       });
-  //       print(synonyms);
-  //     } else {
-  //       print('Request failed with status: ${response.statusCode}.');
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
-
   Future<void> getSynonyms(String word) async {
     try {
       final response = await http.get(
-        Uri.parse('https://dict.longdo.com/mobile.php?search=$word'),
+        Uri.parse('https://api.datamuse.com/words?rel_syn=$word&max=10'),
       );
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = jsonDecode(response.body);
@@ -66,6 +46,26 @@ class _translate_screenState extends State<translate_screen> {
       print(e);
     }
   }
+
+  // Future<void> getSynonyms(String word) async {
+  //   try {
+  //     final response = await http.get(
+  //       Uri.parse('https://dict.longdo.com/mobile.php?search=$word'),
+  //     );
+  //     if (response.statusCode == 200) {
+  //       final List<dynamic> jsonData = jsonDecode(response.body);
+  //       final List wordSynonyms = jsonData.map((item) => item['word']).toList();
+  //       setState(() {
+  //         synonyms = wordSynonyms;
+  //       });
+  //       print(synonyms);
+  //     } else {
+  //       print('Request failed with status: ${response.statusCode}.');
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
