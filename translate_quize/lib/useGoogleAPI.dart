@@ -5,7 +5,8 @@ void translateText() async {
   String originalText = 'dog';
   String targetLanguage = 'th';
 
-  String apiKey = 'YOUR_API_KEY'; // Replace with your actual API key
+  String apiKey =
+      'AIzaSyA41WAS5QJoLtRQ0m2hYFCm0z7DFKGW4s0'; // Replace with your actual API key
 
   String apiUrl =
       'https://translation.googleapis.com/language/translate/v2?key=$apiKey&q=$originalText&source=en&target=$targetLanguage';

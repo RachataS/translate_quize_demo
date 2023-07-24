@@ -25,47 +25,30 @@ class _translate_screenState extends State<translate_screen> {
   String inlang = "en";
   String outlang = "th";
   final rawtxt = TextEditingController();
-  var synonyms = [];
+  var synonyms;
+  final apiKey = 'AIzaSyA41WAS5QJoLtRQ0m2hYFCm0z7DFKGW4s0';
 
-  Future<void> getSynonyms(String word) async {
-    try {
-      final response = await http.get(
-        Uri.parse('https://api.datamuse.com/words?rel_syn=$word&max=10'),
-      );
-      if (response.statusCode == 200) {
-        final List<dynamic> jsonData = jsonDecode(response.body);
-        final List wordSynonyms = jsonData.map((item) => item['word']).toList();
-        setState(() {
-          synonyms = wordSynonyms;
-        });
-        print(synonyms);
-      } else {
-        print('Request failed with status: ${response.statusCode}.');
+  Future<List<String>> getTranslations(
+      String input, String targetLanguage) async {
+    final url = Uri.parse(
+        'https://translation.googleapis.com/language/translate/v2?key=$apiKey&q=$input&target=$targetLanguage');
+
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final translations = data['data']['translations'];
+      final List<String> translatedTexts = [];
+
+      for (var translation in translations) {
+        final translatedText = translation['translatedText'];
+        translatedTexts.add(translatedText);
       }
-    } catch (e) {
-      print(e);
+
+      return translatedTexts;
+    } else {
+      throw Exception('Failed to load translations');
     }
   }
-
-  // Future<void> getSynonyms(String word) async {
-  //   try {
-  //     final response = await http.get(
-  //       Uri.parse('https://dict.longdo.com/mobile.php?search=$word'),
-  //     );
-  //     if (response.statusCode == 200) {
-  //       final List<dynamic> jsonData = jsonDecode(response.body);
-  //       final List wordSynonyms = jsonData.map((item) => item['word']).toList();
-  //       setState(() {
-  //         synonyms = wordSynonyms;
-  //       });
-  //       print(synonyms);
-  //     } else {
-  //       print('Request failed with status: ${response.statusCode}.');
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -96,57 +79,71 @@ class _translate_screenState extends State<translate_screen> {
           },
         ),
       ),
-      body: Card(
-        key: formKey,
-        margin: const EdgeInsets.fromLTRB(12, 12, 12, 200),
-        child: ListView(
-          padding: const EdgeInsets.all(20),
-          children: [
-            Text(label),
-            const SizedBox(
-              height: 8,
+      body: Row(
+        children: [
+          Card(
+            key: formKey,
+            margin: const EdgeInsets.fromLTRB(12, 12, 12, 200),
+            child: ListView(
+              padding: const EdgeInsets.all(20),
+              children: [
+                Text(label),
+                const SizedBox(
+                  height: 8,
+                ),
+                TextFormField(
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  decoration: const InputDecoration(
+                    hintText: "Enter Text",
+                  ),
+                  controller: rawtxt,
+                  onChanged: (rawtxt) async {
+                    if (rawtxt == "") {
+                      translated = "คำแปล";
+                    } else {
+                      try {
+                        formKey.currentState?.save();
+                        await translator
+                            .translate(rawtxt, from: inlang, to: outlang)
+                            .then((transaltion) {
+                          setState(() {
+                            translated = transaltion.toString();
+                          });
+                        });
+                      } catch (e) {
+                        print(e);
+                      }
+                    }
+                  },
+                ),
+                const Divider(
+                  height: 32,
+                ),
+                Text(
+                  '$translated',
+                  style: const TextStyle(
+                      fontSize: 28,
+                      color: Colors.blueGrey,
+                      fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
-            TextFormField(
-              style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
-              decoration: const InputDecoration(
-                hintText: "Enter Text",
-              ),
-              controller: rawtxt,
-              onChanged: (rawtxt) async {
-                if (rawtxt == "") {
-                  translated = "คำแปล";
-                } else {
-                  try {
-                    formKey.currentState?.save();
-                    await translator
-                        .translate(rawtxt, from: inlang, to: outlang)
-                        .then((transaltion) {
-                      setState(() {
-                        translated = transaltion.toString();
-                        getSynonyms(rawtxt);
-                      });
-                    });
-                  } catch (e) {
-                    print(e);
-                  }
-                }
-              },
+          ),
+          TextButton(
+            style: ButtonStyle(
+              overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                  (Set<MaterialState> states) {
+                if (states.contains(MaterialState.focused)) return Colors.red;
+                return null; // Defer to the widget's default.
+              }),
             ),
-            const Divider(
-              height: 32,
-            ),
-            Text(
-              '$translated\n$synonyms',
-              style: const TextStyle(
-                  fontSize: 28,
-                  color: Colors.blueGrey,
-                  fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
+            onPressed: () {},
+            child: Text('1'),
+          )
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -155,6 +152,11 @@ class _translate_screenState extends State<translate_screen> {
             save_engtxt = rawtxt.text;
             print(save_engtxt);
             print(save_thtxt);
+            final translations = await getTranslations(save_engtxt, outlang);
+
+            for (var translation in translations) {
+              print('all meaning = $translation');
+            }
           } catch (e) {
             print(e);
           }
