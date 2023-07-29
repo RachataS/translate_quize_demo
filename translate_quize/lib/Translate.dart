@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:page_transition/page_transition.dart';
 import 'package:translator/translator.dart';
 import 'dart:convert';
-
+import 'components/Translate.dart';
 import 'Thai_translate.dart';
 
 class translate_screen extends StatefulWidget {
@@ -19,37 +19,13 @@ class translate_screen extends StatefulWidget {
 class _translate_screenState extends State<translate_screen> {
   final formKey = GlobalKey<FormState>();
   GoogleTranslator translator = GoogleTranslator();
-  String label = "English (US)";
+  //Translate translator = Translate();
   String translated = "คำแปล";
-  var save_engtxt, save_thtxt, raw;
-  String inlang = "en";
-  String outlang = "th";
+  var save_engtxt, save_thtxt;
+  var raw;
+  var inputLanguage = "en";
+  var outputLanguage = "th";
   final rawtxt = TextEditingController();
-  var synonyms;
-  final apiKey = 'AIzaSyA41WAS5QJoLtRQ0m2hYFCm0z7DFKGW4s0';
-
-  Future<List<String>> getTranslations(
-      String input, String targetLanguage) async {
-    final url = Uri.parse(
-        'https://translation.googleapis.com/language/translate/v2?key=$apiKey&q=$input&target=$targetLanguage');
-
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final translations = data['data']['translations'];
-      final List<String> translatedTexts = [];
-
-      for (var translation in translations) {
-        final translatedText = translation['translatedText'];
-        translatedTexts.add(translatedText);
-      }
-
-      return translatedTexts;
-    } else {
-      throw Exception('Failed to load translations');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,19 +35,6 @@ class _translate_screenState extends State<translate_screen> {
         leading: IconButton(
           icon: Icon(Icons.translate_sharp),
           onPressed: () {
-            /*if (inlang == "en") {
-              inlang = "th";
-              outlang = "en";
-              label = "English (US)";
-              print(label);
-            } else {
-              if (inlang == "th") {
-                inlang = "en";
-                outlang = "th";
-                label = "ไทย (TH)";
-                print(label);
-              }
-            }*/
             Navigator.push(
                 context,
                 PageTransition(
@@ -79,84 +42,64 @@ class _translate_screenState extends State<translate_screen> {
           },
         ),
       ),
-      body: Row(
-        children: [
-          Card(
-            key: formKey,
-            margin: const EdgeInsets.fromLTRB(12, 12, 12, 200),
-            child: ListView(
-              padding: const EdgeInsets.all(20),
-              children: [
-                Text(label),
-                const SizedBox(
-                  height: 8,
-                ),
-                TextFormField(
-                  style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  decoration: const InputDecoration(
-                    hintText: "Enter Text",
-                  ),
-                  controller: rawtxt,
-                  onChanged: (rawtxt) async {
-                    if (rawtxt == "") {
-                      translated = "คำแปล";
-                    } else {
-                      try {
-                        formKey.currentState?.save();
-                        await translator
-                            .translate(rawtxt, from: inlang, to: outlang)
-                            .then((transaltion) {
-                          setState(() {
-                            translated = transaltion.toString();
-                          });
-                        });
-                      } catch (e) {
-                        print(e);
-                      }
-                    }
-                  },
-                ),
-                const Divider(
-                  height: 32,
-                ),
-                Text(
-                  '$translated',
-                  style: const TextStyle(
-                      fontSize: 28,
-                      color: Colors.blueGrey,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
+      body: Card(
+        key: formKey,
+        margin: const EdgeInsets.fromLTRB(12, 12, 12, 200),
+        child: ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            const Text("English (EN)"),
+            const SizedBox(
+              height: 8,
             ),
-          ),
-          TextButton(
-            style: ButtonStyle(
-              overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                  (Set<MaterialState> states) {
-                if (states.contains(MaterialState.focused)) return Colors.red;
-                return null; // Defer to the widget's default.
-              }),
+            TextFormField(
+              style: const TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+              decoration: const InputDecoration(
+                hintText: "Enter text",
+              ),
+              controller: rawtxt,
+              onChanged: (rawtxt) async {
+                if (rawtxt == "") {
+                  translated = "คำแปล";
+                } else {
+                  try {
+                    formKey.currentState?.save();
+                    await translator
+                        .translate(rawtxt, from: 'en', to: 'th')
+                        .then((transaltion) {
+                      setState(() {
+                        translated = transaltion.toString();
+                      });
+                    });
+                  } catch (e) {
+                    print(e);
+                  }
+                }
+              },
             ),
-            onPressed: () {},
-            child: Text('1'),
-          )
-        ],
+            const Divider(
+              height: 32,
+            ),
+            Text(
+              translated,
+              style: const TextStyle(
+                  fontSize: 28,
+                  color: Colors.blueGrey,
+                  fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           try {
-            save_thtxt = translated;
-            save_engtxt = rawtxt.text;
-            print(save_engtxt);
+            save_engtxt = translated;
+            save_thtxt = rawtxt.text;
             print(save_thtxt);
-            final translations = await getTranslations(save_engtxt, outlang);
-
-            for (var translation in translations) {
-              print('all meaning = $translation');
-            }
+            print(save_engtxt);
           } catch (e) {
             print(e);
           }

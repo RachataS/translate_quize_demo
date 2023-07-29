@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:translate_quize/Thai_translate.dart';
 import 'package:translate_quize/Translate.dart';
 
 void main() {
