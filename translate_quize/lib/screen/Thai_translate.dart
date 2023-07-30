@@ -1,30 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:http/http.dart' as http;
 import 'package:page_transition/page_transition.dart';
+import 'package:translate_quize/screen/Translate.dart';
 import 'package:translator/translator.dart';
-import 'dart:convert';
-import 'components/Translate.dart';
-import 'Thai_translate.dart';
 
-class translate_screen extends StatefulWidget {
-  const translate_screen({super.key});
+class thai_translate extends StatefulWidget {
+  const thai_translate({super.key});
 
   @override
-  State<translate_screen> createState() => _translate_screenState();
+  State<thai_translate> createState() => _thai_translateState();
 }
 
-class _translate_screenState extends State<translate_screen> {
+class _thai_translateState extends State<thai_translate> {
   final formKey = GlobalKey<FormState>();
   GoogleTranslator translator = GoogleTranslator();
-  //Translate translator = Translate();
-  String translated = "คำแปล";
+  String translated = "Translation";
   var save_engtxt, save_thtxt;
   var raw;
-  var inputLanguage = "en";
-  var outputLanguage = "th";
   final rawtxt = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -38,7 +31,7 @@ class _translate_screenState extends State<translate_screen> {
             Navigator.push(
                 context,
                 PageTransition(
-                    child: thai_translate(), type: PageTransitionType.fade));
+                    child: translate_screen(), type: PageTransitionType.fade));
           },
         ),
       ),
@@ -48,7 +41,7 @@ class _translate_screenState extends State<translate_screen> {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            const Text("English (EN)"),
+            const Text("ไทย (TH)"),
             const SizedBox(
               height: 8,
             ),
@@ -58,17 +51,17 @@ class _translate_screenState extends State<translate_screen> {
                 fontWeight: FontWeight.bold,
               ),
               decoration: const InputDecoration(
-                hintText: "Enter text",
+                hintText: "ป้อนข้อความ",
               ),
               controller: rawtxt,
               onChanged: (rawtxt) async {
                 if (rawtxt == "") {
-                  translated = "คำแปล";
+                  translated = "Translation";
                 } else {
                   try {
                     formKey.currentState?.save();
                     await translator
-                        .translate(rawtxt, from: 'en', to: 'th')
+                        .translate(rawtxt, from: 'th', to: 'en')
                         .then((transaltion) {
                       setState(() {
                         translated = transaltion.toString();

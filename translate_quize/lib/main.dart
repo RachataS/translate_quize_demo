@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:translate_quize/Thai_translate.dart';
-import 'package:translate_quize/Translate.dart';
+import 'package:translate_quize/screen/Thai_translate.dart';
+import 'package:translate_quize/screen/Translate.dart';
+import 'package:translate_quize/screen/authentication/loginPage.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
   runApp(const MyApp());
 }
 
@@ -72,6 +74,6 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return translate_screen();
+    return LoginPage();
   }
 }
