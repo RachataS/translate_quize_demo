@@ -132,39 +132,48 @@ class _registerPageState extends State<registerPage> {
                                 onPressed: () async {
                                   if (formKey.currentState!.validate()) {
                                     formKey.currentState?.save();
-                                    try {
-                                      await FirebaseAuth.instance
-                                          .createUserWithEmailAndPassword(
-                                              email: profile.email,
-                                              password: profile.password);
-                                      await _notgoogleprofileCollection.add({
-                                        "Username": profile.username,
-                                        "Email": profile.email,
-                                        "password": profile.password,
-                                      });
+                                    if (profile.password !=
+                                        profile.conpassword) {
                                       Fluttertoast.showToast(
-                                          msg: "สร้างบัญชีผู้ใช้สำเร็จ",
+                                          msg: 'รหัสผ่านไม่ตรงกัน',
                                           gravity: ToastGravity.TOP);
-                                      Navigator.pushReplacement(context,
-                                          MaterialPageRoute(builder: (context) {
-                                        return LoginPage();
-                                      }));
-                                    } on FirebaseAuthException catch (e) {
-                                      var message;
-                                      if (e.code == "email-already-in-use") {
-                                        message =
-                                            "อีเมลนี้เคยถูกใช้ลงทะเบียนแล้ว โปรดใช้อีเมลอื่นหรือเข้าสู่ระบบ";
-                                      } else if (e.code == "weak-password") {
-                                        message =
-                                            "รหัสผ่านต้องมีความยาวมากกว่า 8 ตัวอักษร";
-                                      } else {
-                                        message == e.code;
+                                    } else {
+                                      try {
+                                        await FirebaseAuth.instance
+                                            .createUserWithEmailAndPassword(
+                                                email: profile.email,
+                                                password: profile.password);
+                                        await _notgoogleprofileCollection.add({
+                                          "Username": profile.username,
+                                          "Email": profile.email,
+                                          "password": profile.password,
+                                        });
+                                        Fluttertoast.showToast(
+                                            msg: "สร้างบัญชีผู้ใช้สำเร็จ",
+                                            gravity: ToastGravity.TOP);
+                                        Navigator.pushReplacement(context,
+                                            MaterialPageRoute(
+                                                builder: (context) {
+                                          return LoginPage();
+                                        }));
+                                        formKey.currentState?.reset();
+                                      } on FirebaseAuthException catch (e) {
+                                        var message;
+                                        if (e.code == "email-already-in-use") {
+                                          message =
+                                              "อีเมลนี้เคยถูกใช้ลงทะเบียนแล้ว โปรดใช้อีเมลอื่นหรือเข้าสู่ระบบ";
+                                        } else if (e.code == "weak-password") {
+                                          message =
+                                              "รหัสผ่านต้องมีความยาวมากกว่า 8 ตัวอักษร";
+                                        } else {
+                                          message == e.code;
+                                        }
+                                        Fluttertoast.showToast(
+                                            msg: message,
+                                            gravity: ToastGravity.TOP);
+                                        formKey.currentState?.reset();
                                       }
-                                      Fluttertoast.showToast(
-                                          msg: message,
-                                          gravity: ToastGravity.TOP);
                                     }
-                                    formKey.currentState?.reset();
                                   }
                                 },
                                 icon: Icon(Icons.add),
