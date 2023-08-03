@@ -6,6 +6,7 @@ import 'package:form_field_validator/form_field_validator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:translate_quize/screen/Translate.dart';
 import 'package:translate_quize/screen/authentication/registerPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../model/profile.dart';
 
@@ -84,32 +85,8 @@ class _LoginPageState extends State<LoginPage> {
                           child: SizedBox(
                             width: 300,
                             child: ElevatedButton.icon(
-                                onPressed: () async {
-                                  if (formKey.currentState!.validate()) {
-                                    formKey.currentState?.save();
-                                    try {
-                                      await FirebaseAuth.instance
-                                          .signInWithEmailAndPassword(
-                                              email: profile.email,
-                                              password: profile.password)
-                                          .then((value) {
-                                        formKey.currentState?.reset();
-                                        Fluttertoast.showToast(
-                                            msg: "เข้าสู่ระบบสำเร็จ",
-                                            gravity: ToastGravity.TOP);
-                                        Navigator.push(context,
-                                            MaterialPageRoute(
-                                                builder: (context) {
-                                          return translate_screen();
-                                        }));
-                                      });
-                                    } on FirebaseAuthException catch (e) {
-                                      Fluttertoast.showToast(
-                                          msg: e.code,
-                                          gravity: ToastGravity.TOP);
-                                    }
-                                    formKey.currentState?.reset();
-                                  }
+                                onPressed: () {
+                                  handleLogin();
                                 },
                                 icon: Icon(Icons.login),
                                 label: Text("Login")),
@@ -191,6 +168,35 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
   }
+
+  Future<void> handleLogin() async {
+    if (formKey.currentState!.validate()) {
+      formKey.currentState?.save();
+      try {
+        await FirebaseAuth.instance
+            .signInWithEmailAndPassword(
+                email: profile.email, password: profile.password)
+            .then((value) {
+          formKey.currentState?.reset();
+          Fluttertoast.showToast(
+              msg: "เข้าสู่ระบบสำเร็จ", gravity: ToastGravity.TOP);
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return translate_screen();
+          }));
+          saveLoginStatus(true);
+        });
+      } on FirebaseAuthException catch (e) {
+        Fluttertoast.showToast(msg: e.code, gravity: ToastGravity.TOP);
+      }
+      formKey.currentState?.reset();
+    }
+  }
+}
+
+Future<void> saveLoginStatus(bool isLoggedIn) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setBool('isLoggedIn', isLoggedIn);
+  print(isLoggedIn);
 }
 
 class btTextStyle {
@@ -203,8 +209,6 @@ class Googlebt {
 }
 
 class GooglesignInProvider extends ChangeNotifier {
-  //final googlesignin = GooglesignIn();
-
   GoogleSignInAccount? _user;
 
   GoogleSignInAccount get user => _user!;
@@ -223,5 +227,6 @@ class GooglesignInProvider extends ChangeNotifier {
     await FirebaseAuth.instance.signInWithCredential(credential);
 
     notifyListeners();
+    saveLoginStatus(true);
   }
 }
